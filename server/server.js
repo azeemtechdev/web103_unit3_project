@@ -1,36 +1,40 @@
+import 'dotenv/config' // <-- ADD THIS LINE AT THE TOP
 import express from 'express'
 import path from 'path'
-import favicon from 'serve-favicon'
-import dotenv from 'dotenv'
+import { fileURLToPath } from 'url'
+import logger from 'morgan'
+import cors from 'cors'
 
-// import the router from your routes file
+// Import routers
+import locationsRouter from './routes/locations.js'
+import eventsRouter from './routes/events.js'
 
-
-dotenv.config()
-
-const PORT = process.env.PORT || 3000
+// Set up __dirname for ES Modules
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const app = express()
 
 app.use(express.json())
+app.use(logger('dev'))
+app.use(cors())
 
-if (process.env.NODE_ENV === 'development') {
-    app.use(favicon(path.resolve('../', 'client', 'public', 'party.png')))
-}
-else if (process.env.NODE_ENV === 'production') {
-    app.use(favicon(path.resolve('public', 'party.png')))
-    app.use(express.static('public'))
-}
+// Use routers
+app.use('/api/locations', locationsRouter)
+app.use('/api/events', eventsRouter)
 
-// specify the api path for the server to use
+// --- SIMPLIFIED STATIC PATHS ---
 
+// Serve static files from the client's 'dist' directory
+app.use(express.static(path.join(__dirname, '../client/dist')))
 
-if (process.env.NODE_ENV === 'production') {
-    app.get('/*', (_, res) =>
-        res.sendFile(path.resolve('public', 'index.html'))
-    )
-}
+// Handles any requests that don't match the ones above
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist', 'index.html'))
+})
+
+const PORT = process.env.PORT || 3000
 
 app.listen(PORT, () => {
-    console.log(`server listening on http://localhost:${PORT}`)
+    console.log(`🚀 Server listening on http://localhost:${PORT}`)
 })

@@ -2,34 +2,30 @@ import React from 'react'
 import { useRoutes, Link } from 'react-router-dom'
 import Locations from './pages/Locations'
 import LocationEvents from './pages/LocationEvents'
-import Events from './pages/Events'
 import './App.css'
 
 const App = () => {
+  // These routes now match your custom music venues
   let element = useRoutes([
     {
       path: '/',
       element: <Locations />
     },
     {
-      path: '/echolounge',
-      element: <LocationEvents index={1} />
+      path: '/afrobeats-island',
+      element: <LocationEvents locationId={1} /> // Passing locationId
     },
     {
-      path: '/houseofblues',
-      element: <LocationEvents index={2} />
+      path: '/rb-city',
+      element: <LocationEvents locationId={2} /> // Passing locationId
     },
     {
-      path: '/pavilion',
-      element: <LocationEvents index={3} />
+      path: '/jazz-town',
+      element: <LocationEvents locationId={3} /> // Passing locationId
     },
     {
-      path: '/americanairlines',
-      element: <LocationEvents index={4} />
-    },
-    {
-      path: '/events',
-      element: <Events />
+      path: '/hip-hop-district',
+      element: <LocationEvents locationId={4} /> // Passing locationId
     }
   ])
 
@@ -37,11 +33,12 @@ const App = () => {
     <div className='app'>
 
       <header className='main-header'>
-        <h1>UnityGrid Plaza</h1>
+        {/* Updated title */}
+        <h1>Music Country</h1>
 
         <div className='header-buttons'>
           <Link to='/' role='button'>Home</Link>
-          <Link to='/events' role='button'>Events</Link>
+          {/* Removed the non-working "Events" button */}
         </div>
       </header>
 

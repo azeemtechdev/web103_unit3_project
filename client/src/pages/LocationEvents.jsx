@@ -1,40 +1,51 @@
-import React, { useState, useEffect } from 'react'
-import Event from '../components/Event'
-import '../css/LocationEvents.css'
+import React, { useState, useEffect } from 'react';
+import { getLocationById } from '../services/location';
+import { getEventsByLocation } from '../services/events';
+import Event from '../components/Event';
+import '../css/LocationEvents.css';
 
-const LocationEvents = ({index}) => {
-    const [location, setLocation] = useState([])
-    const [events, setEvents] = useState([])
+const LocationEvents = ({ locationId }) => {
+  const [location, setLocation] = useState(null);
+  const [events, setEvents] = useState([]);
 
-    return (
-        <div className='location-events'>
-            <header>
-                <div className='location-image'>
-                    <img src={location.image} />
-                </div>
+  useEffect(() => {
+    const fetchLocationAndEvents = async () => {
+      const locationData = await getLocationById(locationId);
+      setLocation(locationData);
 
-                <div className='location-info'>
-                    <h2>{location.name}</h2>
-                    <p>{location.address}, {location.city}, {location.state} {location.zip}</p>
-                </div>
-            </header>
+      const eventsData = await getEventsByLocation(locationId);
+      setEvents(eventsData);
+    };
 
-            <main>
-                {
-                    events && events.length > 0 ? events.map((event, index) =>
-                        <Event
-                            key={event.id}
-                            id={event.id}
-                            title={event.title}
-                            date={event.date}
-                            time={event.time}
-                            image={event.image}
-                        />
-                    ) : <h2><i className="fa-regular fa-calendar-xmark fa-shake"></i> {'No events scheduled at this location yet!'}</h2>
-                }
-            </main>
+    fetchLocationAndEvents();
+  }, [locationId]);
+
+  if (!location) {
+    return <div>Loading...</div>;
+  }
+
+  // This JSX now uses the class names from your original CSS file
+  return (
+    <div className="location-events">
+      <header>
+        <div className="location-image">
+            <img style={{width:"300px"}} src={location.image_url} alt={location.name} />
         </div>
-    )
-}
+        <div className="location-info">
+          <h1>{location.name}</h1>
+          <p>{location.description}</p>
+        </div>
+      </header>
 
-export default LocationEvents
+      <main>
+        {events.length > 0 ? (
+          events.map(event => <Event key={event.id} event={event} />)
+        ) : (
+          <p>No events scheduled for this location at the moment.</p>
+        )}
+      </main>
+    </div>
+  );
+};
+
+export default LocationEvents;
